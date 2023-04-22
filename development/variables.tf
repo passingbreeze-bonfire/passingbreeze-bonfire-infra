@@ -2,7 +2,7 @@ variable "dev_vpc_name" {
   type = string
 }
 
-variable "dev_vpc_cidr" {
+variable "dev_aws_vpc_cidr" {
   type = string
 }
 

@@ -2,12 +2,12 @@ module "dev_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = ">= 3.0"
 
-  name = var.name
+  name = var.dev_vpc_name
   cidr = var.dev_vpc_cidr
 
-  azs             = ["${var.region}a", "${var.region}c", "${var.region}d"]
-  private_subnets = var.aws_private_cidrs
-  public_subnets  = var.aws_public_cidrs
+  azs             = ["${var.dev_region}a", "${var.dev_region}c", "${var.dev_region}d"]
+  private_subnets = var.dev_private_cidrs
+  public_subnets  = var.dev_public_cidrs
 
   enable_dns_hostnames = true
   enable_dns_support   = true

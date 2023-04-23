@@ -23,6 +23,7 @@ jobs:
         with:
           terraform_version: 1.3.7
       - name: Download Go dependencies
+        working-directory: ./development/terratest
         run: go mod download
       - name: Run Test
         working-directory: ./development/terratest

@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
     effect = "Allow"
     actions = ["iam:ChangePassword"]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:GetUser"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:UpdateAccessKey"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:UploadSigningCertificate"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -93,7 +93,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:UploadSSHPublicKey"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -107,7 +107,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:UpdateServiceSpecificCredential"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:DeleteVirtualMFADevice"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:mfa/$${aws:username}"
+      "arn:aws:iam::*:mfa/$${aws:username}"
     ]
   }
   statement {
@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
       "iam:ResyncMFADevice"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
+      "arn:aws:iam::*:user/$${aws:username}"
     ]
   }
   statement {
@@ -151,7 +151,7 @@ data "aws_iam_policy_document" "admin_group_policies" {
     ]
     resources = ["*"]
     condition {
-      test = "Bool"
+      test = "BoolIfExists"
       variable = "aws:MultiFactorAuthPresent"
       values = ["false"]
     }

@@ -20,3 +20,7 @@ module "aws_vpc_dev" {
   dev_private_cidrs = var.dev_private_cidrs
   dev_public_cidrs  = var.dev_public_cidrs
 }
+
+module "aws_iam_group_dev_admin" {
+  source = "./iam-groups"
+}

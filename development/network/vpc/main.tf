@@ -24,6 +24,5 @@ module "dev_vpc" {
   #  enable_flow_log                      = false
   create_egress_only_igw = true
   enable_nat_gateway     = false
-
-  tags = var.dev_tags
+  tags                   = var.dev_tags
 }

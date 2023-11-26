@@ -2,10 +2,6 @@ variable "dev_vpc_name" {
   type = string
 }
 
-variable "dev_vpc_cidr" {
-  type = string
-}
-
 variable "dev_region" {
   type = string
 }

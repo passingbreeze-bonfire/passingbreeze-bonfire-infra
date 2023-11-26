@@ -12,9 +12,4 @@ variable "dev_aws_vpc_cidr" {
 
 variable "dev_tags" {
   type = map(string)
-  default = {
-    "Org"         = "Passingbreeze-bonfire",
-    "Environment" = "Development",
-    "Automation"  = "Terraform_Cloud"
-  }
 }

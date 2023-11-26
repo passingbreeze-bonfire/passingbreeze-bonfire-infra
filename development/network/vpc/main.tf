@@ -1,23 +1,3 @@
-resource "aws_vpc_ipam" "this" {
-  operating_regions {
-    region_name = var.dev_region
-  }
-
-  tags = var.dev_tags
-}
-
-resource "aws_vpc_ipam_pool" "ipv6" {
-  description                       = "IPv6 pool"
-  address_family                    = "ipv6"
-  ipam_scope_id                     = aws_vpc_ipam.this.public_default_scope_id
-  locale                            = var.dev_region
-  allocation_default_netmask_length = 48
-  publicly_advertisable             = false
-  aws_service                       = "ec2"
-
-  tags = var.dev_tags
-}
-
 module "dev_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = ">= 5.0.0"
@@ -27,8 +7,6 @@ module "dev_vpc" {
   enable_ipv6          = true
 
   name                                            = var.dev_vpc_name
-  ipv6_cidr                                       = var.dev_aws_vpc_cidr
-  ipv6_ipam_pool_id                               = aws_vpc_ipam_pool.ipv6.id
   azs                                             = tolist([for az in ["a", "c"] : "${var.dev_region}${az}"])
   public_subnet_ipv6_native                       = true
   public_subnet_ipv6_prefixes                     = [56, 56]

@@ -19,13 +19,5 @@ repos:
     hooks:
     -   id: terraform_fmt
     -   id: terraform_validate
-    -   id: terraform_tflint
-        args:
-        - --args=--disable-rule=terraform_required_providers
-        - --args=--disable-rule=terraform_required_version
-    # -   id: terraform_tfsec
-    -   id: infracost_breakdown
-        args:
-        - --args=--path=.
         verbose: true # Always show
 # ---

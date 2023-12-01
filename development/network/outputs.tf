@@ -2,6 +2,10 @@ output "dev_vpc_id" {
   value = module.dev_vpc.vpc_id
 }
 
+output "dev_vpc_name" {
+  value = module.dev_vpc.name
+}
+
 output "dev_vpc_cidr_block" {
   value = module.dev_vpc.vpc_ipv6_cidr_block
 }

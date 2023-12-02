@@ -32,9 +32,11 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
-  cluster_name              = local.name
-  cluster_version           = "1.28"
-  cluster_service_ipv4_cidr = data.terraform_remote_state.dev_network.outputs.vpc_cidr_block
+  cluster_name    = local.name
+  cluster_version = "1.28"
+
+  vpc_id     = data.terraform_remote_state.dev_network.outputs.dev_vpc_id
+  subnet_ids = data.terraform_remote_state.dev_network.outputs.dev_vpc_private_subnets
 
   cluster_endpoint_public_access = true
   manage_aws_auth_configmap      = true
@@ -88,9 +90,6 @@ module "eks" {
       })
     }
   }
-
-  vpc_id     = data.terraform_remote_state.dev_network.outputs.dev_vpc_id
-  subnet_ids = data.terraform_remote_state.dev_network.outputs.dev_vpc_private_subnets
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {

@@ -6,12 +6,8 @@ output "dev_vpc_name" {
   value = module.dev_vpc.name
 }
 
-output "vpc_ipv4_cidr_block" {
+output "vpc_cidr_block" {
   value = module.dev_vpc.vpc_cidr_block
-}
-
-output "vpc_ipv6_cidr_block" {
-  value = module.dev_vpc.vpc_ipv6_cidr_block
 }
 
 output "dev_vpc_public_subnets" {

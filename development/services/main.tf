@@ -1,90 +1,3 @@
-terraform {
-  cloud {
-    organization = "passingbreeze"
-
-    workspaces {
-      name = "passingbreeze-bonfire-dev-platforms"
-    }
-  }
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 4.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.10"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 2.7"
-    }
-    kubectl = {
-      source  = "alekc/kubectl"
-      version = ">= 2.0.2"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = ">= 3.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-}
-
-provider "aws" {
-  alias  = "ecr"
-  region = "us-east-1"
-}
-
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
-provider "helm" {
-  # to avoid issue : https://github.com/hashicorp/terraform-provider-helm/issues/630#issuecomment-996682323
-  repository_config_path = "${path.module}/.helm/repositories.yaml"
-  repository_cache       = "${path.module}/.helm"
-
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-    }
-  }
-
-  experiments {
-    manifest = false
-  }
-}
-
-provider "kubectl" {
-  apply_retry_count      = 5
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  load_config_file       = false
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 data "terraform_remote_state" "dev_network" {
   backend = "remote"
 
@@ -108,13 +21,17 @@ locals {
   })
 }
 
+#######
+# EKS #
+#######
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
-  cluster_name      = local.name
-  cluster_version   = "1.28"
-  cluster_ip_family = "ipv6"
+  cluster_name              = local.name
+  cluster_version           = "1.28"
+  cluster_service_ipv4_cidr = data.terraform_remote_state.dev_network.outputs.vpc_cidr_block
 
   cluster_endpoint_public_access = true
   manage_aws_auth_configmap      = true

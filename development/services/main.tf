@@ -112,8 +112,10 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
-  cluster_name    = local.name
-  cluster_version = "1.28"
+  cluster_name              = local.name
+  cluster_version           = "1.28"
+  cluster_ip_family         = "ipv6"
+  cluster_service_ipv6_cidr = data.terraform_remote_state.dev_network.outputs.dev_vpc_ipv6_cidr_block
 
   cluster_endpoint_public_access = true
   manage_aws_auth_configmap      = true
@@ -217,6 +219,7 @@ module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
   cluster_name           = module.eks.cluster_name
+  cluster_ip_family      = "ipv6"
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile

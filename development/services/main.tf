@@ -9,6 +9,9 @@ data "terraform_remote_state" "dev_network" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 data "aws_ecrpublic_authorization_token" "token" {
   provider = aws.ecr
 }

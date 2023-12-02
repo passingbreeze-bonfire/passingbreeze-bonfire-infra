@@ -38,8 +38,8 @@ module "dev_vpc" {
   name            = var.dev_vpc_name
   cidr            = local.ipv4_cidr
   azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 8, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 8, k + 4)]
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 4, k + 4)]
 
   enable_nat_gateway = true
 

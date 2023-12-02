@@ -22,7 +22,9 @@ provider "aws" {
 data "aws_region" "current" {}
 
 locals {
-  name = "passingbreeze-bonfire-dev-network"
+  name      = "passingbreeze-bonfire-dev-network"
+  ipv4_cidr = "10.24.0.0/16"
+  azs       = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
 
 module "dev_vpc" {
@@ -31,18 +33,15 @@ module "dev_vpc" {
 
   enable_dns_hostnames = true
   enable_dns_support   = true
-  enable_ipv6          = true
   enable_flow_log      = false
-  enable_nat_gateway   = false
 
-  name                         = var.dev_vpc_name
-  azs                          = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
-  public_subnet_ipv6_native    = true
-  public_subnet_ipv6_prefixes  = [0, 1]
-  private_subnet_ipv6_native   = true
-  private_subnet_ipv6_prefixes = [2, 3]
+  name            = var.dev_vpc_name
+  cidr            = local.ipv4_cidr
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 8, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 8, k + 4)]
 
-  create_egress_only_igw = true
+  enable_nat_gateway = true
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1 # for AWS Load Balancer Controller

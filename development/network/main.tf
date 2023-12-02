@@ -23,7 +23,7 @@ data "aws_region" "current" {}
 
 locals {
   name      = "passingbreeze-bonfire-dev-network"
-  ipv4_cidr = "10.24.0.0/16"
+  ipv4_cidr = "10.0.0.0/16"
   azs       = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
 

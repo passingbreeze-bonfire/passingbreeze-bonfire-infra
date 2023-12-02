@@ -1,4 +1,22 @@
-# karpenter
+## EKS / Karpenter
+
+module "karpenter" {
+  source = "terraform-aws-modules/eks/aws//modules/karpenter"
+
+  cluster_name           = module.eks.cluster_name
+  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+
+  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
+  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
+  enable_karpenter_instance_profile_creation = true
+
+  iam_role_additional_policies = {
+    AmazonSSMFullAccess          = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
+
+  tags = local.tags
+}
 
 resource "helm_release" "karpenter" {
   namespace        = "karpenter"
@@ -125,9 +143,7 @@ resource "kubectl_manifest" "karpenter_deployment" {
   ]
 }
 
-###############
-# externalDNS #
-###############
+## EKS / External DNS
 
 locals {
   oidc_url       = replace(module.eks.cluster_oidc_issuer_url, "https://", "")

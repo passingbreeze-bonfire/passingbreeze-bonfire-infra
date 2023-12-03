@@ -61,7 +61,7 @@ resource "aws_iam_role_policy" "external_dns" {
 resource "kubernetes_service_account" "external_dns" {
   metadata {
     name      = "external-dns"
-    namespace = "kube-system"
+    namespace = "external-dns"
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns.arn
     }

@@ -90,15 +90,12 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
               values: ["t", "r"]
-            - key: "karpenter.k8s.aws/instance-cpu"
-              operator: In
-              values: ["2", "4", "8"]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
               values: ["3"]
             - key: karpenter.k8s.aws/instance-size
               operator: In
-              values: ["small", "large"]
+              values: ["medium", "large"]
             - key: "karpenter.sh/capacity-type" # Defaults to on-demand
               operator: In
               values: ["spot", "on-demand"]

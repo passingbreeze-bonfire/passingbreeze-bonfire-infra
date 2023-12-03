@@ -110,11 +110,6 @@ module "eks" {
         { namespace = "karpenter" }
       ]
     }
-    external-dns = {
-      selectors = [
-        { namespace = "external-dns" }
-      ]
-    }
   }
 
   ## Node Security Group

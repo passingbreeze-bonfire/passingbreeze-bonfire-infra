@@ -90,11 +90,6 @@ module "eks" {
 
   ## Fargate
   fargate_profiles = {
-    kube-system = {
-      selectors = [
-        { namespace = "kube-system" }
-      ]
-    }
     karpenter = {
       selectors = [
         { namespace = "karpenter" }

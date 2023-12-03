@@ -140,21 +140,6 @@ resource "kubectl_manifest" "karpenter_deployment" {
               resources:
                 requests:
                   cpu: 1
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                - matchExpressions:
-                  - key: karpenter.sh/provisioner-name
-                    operator: DoesNotExist
-                - matchExpressions:
-                  - key: eks.amazonaws.com/nodegroup
-                    operator: In
-                    values:
-                    - node-from-karpenter
-            podAntiAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                - topologyKey: "kubernetes.io/hostname"
   YAML
 
   depends_on = [

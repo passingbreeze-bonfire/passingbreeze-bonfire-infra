@@ -93,9 +93,6 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
               values: ["t", "r"]
-            - key: "karpenter.k8s.aws/instance-generation"
-              operator: Gt
-              values: ["3"]
             - key: karpenter.k8s.aws/instance-size
               operator: In
               values: ["medium", "large"]

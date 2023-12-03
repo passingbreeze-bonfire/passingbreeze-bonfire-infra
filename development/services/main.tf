@@ -38,18 +38,13 @@ module "eks" {
   vpc_id     = data.terraform_remote_state.dev_network.outputs.dev_vpc_id
   subnet_ids = data.terraform_remote_state.dev_network.outputs.dev_vpc_private_subnets
 
-  cluster_endpoint_public_access = true
-  manage_aws_auth_configmap      = true
+  cluster_endpoint_public_access         = true
+  manage_aws_auth_configmap              = true
+  cloudwatch_log_group_retention_in_days = 1
 
   cluster_addons = {
     coredns = {
-      preserve    = true
-      most_recent = true
-
-      timeouts = {
-        create = "25m"
-        delete = "10m"
-      }
+      addon_version = "v1.10.1-eksbuild.6"
       configuration_values = jsonencode({
         computeType = "Fargate"
         # Ensure that we fully utilize the minimum amount of resources that are supplied by
@@ -60,25 +55,25 @@ module "eks" {
         # order to ensure pods always have the resources that they need to run.
         resources = {
           limits = {
-            cpu = "0.25"
+            cpu = "1"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
             # request/limit to ensure we can fit within that task
-            memory = "1G"
+            memory = "8G"
           }
           requests = {
             cpu = "0.25"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
             # request/limit to ensure we can fit within that task
-            memory = "1M"
+            memory = "256G"
           }
         }
       })
     }
     kube-proxy = {
-      most_recent = true
+      addon_version = "v1.28.2-eksbuild.2"
     }
     vpc-cni = {
-      most_recent              = true
+      addon_version            = "v1.15.4-eksbuild.1"
       before_compute           = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
       configuration_values = jsonencode({
@@ -108,6 +103,11 @@ module "eks" {
     karpenter = {
       selectors = [
         { namespace = "karpenter" }
+      ]
+    }
+    kube-system = {
+      selectors = [
+        { namespace = "kube-system" }
       ]
     }
   }

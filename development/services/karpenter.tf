@@ -58,7 +58,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
     metadata:
       name: node_from_karpenter
     spec:
-      amiFamily: AL2
+      amiFamily: Ubuntu
       role: ${module.karpenter.role_name}
       subnetSelectorTerms:
         - tags:
@@ -85,7 +85,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       template:
         spec:
           nodeClassRef:
-            name: nodes_from_karpenter
+            name: node_from_karpenter
           requirements:
             - key: "karpenter.k8s.aws/instance-category"
               operator: In

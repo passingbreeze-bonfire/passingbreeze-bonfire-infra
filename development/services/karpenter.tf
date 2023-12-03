@@ -69,6 +69,14 @@ resource "kubectl_manifest" "karpenter_node_class" {
             karpenter.sh/discovery: ${module.eks.cluster_name}
       tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
+      blockDeviceMappings:
+        - deviceName: /dev/xvda
+          ebs:
+            volumeSize: 20Gi
+            volumeType: gp3
+            iops: 3000
+            deleteOnTermination: true
+            throughput: 125
   YAML
 
   depends_on = [
@@ -76,7 +84,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_pool" {
+resource "kubectl_manifest" "karpenter_default_node_pool" {
   yaml_body = <<-YAML
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
@@ -100,9 +108,17 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       limits:
         cpu: 1000
         memory: 1000Gi
+      ttlSecondsAfterEmpty: 30
+      ttlSecondsUntilExpired: 2592000
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
+      labels:
+        type: default
+      taints:
+      - key: type
+        value: default
+        effect: NoSchedule
   YAML
 
   depends_on = [
@@ -110,8 +126,48 @@ resource "kubectl_manifest" "karpenter_node_pool" {
   ]
 }
 
-# Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
-# and starts with zero replicas
+resource "kubectl_manifest" "karpenter_service_node_pool" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1beta1
+    kind: NodePool
+    metadata:
+      name: service
+    spec:
+      template:
+        spec:
+          nodeClassRef:
+            name: default
+          requirements:
+            - key: "karpenter.k8s.aws/instance-category"
+              operator: In
+              values: ["c", "m", "r"]
+            - key: karpenter.k8s.aws/instance-size
+              operator: In
+              values: ["large", "xlarge"]
+            - key: "karpenter.sh/capacity-type" # Defaults to on-demand
+              operator: In
+              values: ["spot", "on-demand"]
+      limits:
+        cpu: 1000
+        memory: 1000Gi
+      ttlSecondsAfterEmpty: 30
+      ttlSecondsUntilExpired: 2592000
+      disruption:
+        consolidationPolicy: WhenEmpty
+        consolidateAfter: 30s
+      labels:
+        type: service
+      taints:
+      - key: type
+        value: service
+        effect: NoSchedule
+  YAML
+
+  depends_on = [
+    kubectl_manifest.karpenter_node_class
+  ]
+}
+
 resource "kubectl_manifest" "karpenter_deployment" {
   yaml_body = <<-YAML
     apiVersion: apps/v1
@@ -135,6 +191,8 @@ resource "kubectl_manifest" "karpenter_deployment" {
               resources:
                 requests:
                   cpu: 1
+          nodeSelector:
+            type: default
   YAML
 
   depends_on = [

@@ -55,3 +55,22 @@ module "dev_vpc" {
 
   tags = var.dev_tags
 }
+#
+#module "endpoints" {
+#    source  = "terraform-aws-modules/vpc/aws//modules/endpoint-services"
+#    version = ">= 5.0.0"
+#
+#    vpc_id = module.dev_vpc.vpc_id
+#
+#    enable_s3_endpoint = true
+#    enable_ec2_endpoint = true
+#    enable_ecr_endpoint = true
+#    enable_ecr_dkr_endpoint = true
+#    enable_ecr_api_endpoint = true
+#    enable_logs_endpoint = true
+#    enable_sts_endpoint = true
+#    enable_eks_endpoint = true
+#    enable_eks_endpoint_private_access = true
+#    enable_eks_endpoint_public_access = true
+#    enable_eks_endpoint_public_access_cidrs = ["
+#}

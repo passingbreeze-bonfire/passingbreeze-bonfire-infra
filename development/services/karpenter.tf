@@ -117,6 +117,7 @@ resource "kubectl_manifest" "karpenter_deployment" {
     kind: Deployment
     metadata:
       name: inflate
+      namespace: karpenter
     spec:
       replicas: 0
       selector:

@@ -63,13 +63,13 @@ module "eks" {
             cpu = "0.25"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
             # request/limit to ensure we can fit within that task
-            memory = "256M"
+            memory = "1G"
           }
           requests = {
             cpu = "0.25"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
             # request/limit to ensure we can fit within that task
-            memory = "256M"
+            memory = "1M"
           }
         }
       })
@@ -146,6 +146,7 @@ module "vpc_cni_irsa" {
 
   role_name_prefix      = "VPC-CNI-IRSA"
   attach_vpc_cni_policy = true
+  vpc_cni_enable_ipv4   = true
 
   oidc_providers = {
     main = {

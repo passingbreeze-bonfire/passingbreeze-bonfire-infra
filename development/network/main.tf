@@ -31,9 +31,10 @@ module "dev_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = ">= 5.0.0"
 
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  enable_flow_log      = false
+  enable_dns_hostnames    = true
+  enable_dns_support      = true
+  enable_flow_log         = false
+  map_public_ip_on_launch = true
 
   name            = var.dev_vpc_name
   cidr            = local.ipv4_cidr

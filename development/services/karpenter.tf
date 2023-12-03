@@ -85,7 +85,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       template:
         spec:
           nodeClassRef:
-            name: default
+            name: nodes_from_karpenter
           requirements:
             - key: "karpenter.k8s.aws/instance-category"
               operator: In

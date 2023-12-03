@@ -21,6 +21,17 @@ provider "aws" {
 
 data "aws_region" "current" {}
 
+data "terraform_remote_state" "security" {
+  backend = "remote"
+
+  config = {
+    organization = "passingbreeze"
+    workspaces = {
+      name = "passingbreeze-bonfire-dev-security"
+    }
+  }
+}
+
 locals {
   name      = "passingbreeze-bonfire-dev-network"
   ipv4_cidr = "10.0.0.0/16"
@@ -55,22 +66,35 @@ module "dev_vpc" {
 
   tags = var.dev_tags
 }
-#
-#module "endpoints" {
-#    source  = "terraform-aws-modules/vpc/aws//modules/endpoint-services"
-#    version = ">= 5.0.0"
-#
-#    vpc_id = module.dev_vpc.vpc_id
-#
-#    enable_s3_endpoint = true
-#    enable_ec2_endpoint = true
-#    enable_ecr_endpoint = true
-#    enable_ecr_dkr_endpoint = true
-#    enable_ecr_api_endpoint = true
-#    enable_logs_endpoint = true
-#    enable_sts_endpoint = true
-#    enable_eks_endpoint = true
-#    enable_eks_endpoint_private_access = true
-#    enable_eks_endpoint_public_access = true
-#    enable_eks_endpoint_public_access_cidrs = ["
-#}
+
+module "endpoints" {
+  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+
+  vpc_id             = module.dev_vpc.vpc_id
+  security_group_ids = [data.terraform_remote_state.security.outputs.aws_service_endpoint_sg_id]
+
+  endpoints = {
+    s3 = {
+      service = "s3"
+      tags    = merge(var.dev_tags, { Name = "s3-vpc-endpoint" })
+    },
+    ec2 = {
+      service = "ec2"
+      tags    = merge(var.dev_tags, { Name = "ec2-vpc-endpoint" })
+    },
+    sts = {
+      service = "sts"
+      tags    = merge(var.dev_tags, { Name = "sts-vpc-endpoint" })
+    },
+    ssm = {
+      service = "ssm"
+      tags    = merge(var.dev_tags, { Name = "ssm-vpc-endpoint" })
+    },
+    sqs = {
+      service = "sqs"
+      tags    = merge(var.dev_tags, { Name = "sqs-vpc-endpoint" })
+    },
+  }
+
+  tags = var.dev_tags
+}

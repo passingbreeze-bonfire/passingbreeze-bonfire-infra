@@ -31,6 +31,14 @@ resource "helm_release" "karpenter" {
   version    = "v0.32.1"
 
   set {
+    name  = "privateCluster.enabled"
+    value = true
+  }
+  set {
+    name  = "settings.isolatedVPC"
+    value = true
+  }
+  set {
     name  = "settings.aws.clusterName"
     value = module.eks.cluster_name
   }
@@ -173,7 +181,7 @@ resource "kubectl_manifest" "karpenter_default_deployment" {
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-      name: inflate
+      name: inflate-default
     spec:
       replicas: 0
       selector:
@@ -182,11 +190,11 @@ resource "kubectl_manifest" "karpenter_default_deployment" {
       template:
         metadata:
           labels:
-            app: inflate_default
+            app: inflate-default
         spec:
           terminationGracePeriodSeconds: 0
           containers:
-            - name: inflate_default
+            - name: inflate-default
               image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
               resources:
                 requests:
@@ -205,7 +213,7 @@ resource "kubectl_manifest" "karpenter_service_deployment" {
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-      name: inflate
+      name: inflate-service
     spec:
       replicas: 0
       selector:
@@ -214,11 +222,11 @@ resource "kubectl_manifest" "karpenter_service_deployment" {
       template:
         metadata:
           labels:
-            app: inflate_service
+            app: inflate-service
         spec:
           terminationGracePeriodSeconds: 0
           containers:
-            - name: inflate_default
+            - name: inflate-service
               image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
               resources:
                 requests:

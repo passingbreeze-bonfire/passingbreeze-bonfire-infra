@@ -152,7 +152,7 @@ resource "helm_release" "external-dns" {
 
   set {
     name  = "logLevel"
-    value = "warn"
+    value = "warning"
   }
 
   set {

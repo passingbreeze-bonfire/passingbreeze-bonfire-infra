@@ -57,17 +57,6 @@ module "eks" {
             memory = "256M"
           }
         }
-        nodeSelector = {
-          type = "core"
-        }
-        tolerations = [
-          {
-            key      = "type",
-            value    = "core",
-            operator = "Equal",
-            effect   = "NoSchedule"
-          }
-        ]
       })
     }
     kube-proxy = {

@@ -99,9 +99,12 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             - key: "karpenter.sh/capacity-type" # Defaults to on-demand
               operator: In
               values: ["spot", "on-demand"]
+      requests:
+        cpu: 1
+        memory: 1Gi
       limits:
-        cpu: 1000
-        memory: 1000Gi
+        cpu: 1
+        memory: 1Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -137,6 +140,21 @@ resource "kubectl_manifest" "karpenter_deployment" {
               resources:
                 requests:
                   cpu: 1
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: karpenter.sh/provisioner-name
+                    operator: DoesNotExist
+                - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                    - node-from-karpenter
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: "kubernetes.io/hostname"
   YAML
 
   depends_on = [

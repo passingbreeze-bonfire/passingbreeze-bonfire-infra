@@ -92,7 +92,10 @@ resource "kubectl_manifest" "karpenter_node_pool" {
           requirements:
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: [c, m, r]
+              values: ["c", "m", "r"]
+            - key: "karpenter.k8s.aws/instance-hypervisor"
+              operator: In
+              values: ["nitro"]
             - key: karpenter.k8s.aws/instance-generation
               operator: Gt
               values: ["2"]
@@ -109,8 +112,6 @@ resource "kubectl_manifest" "karpenter_node_pool" {
   ]
 }
 
-# Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
-# and starts with zero replicas
 resource "kubectl_manifest" "karpenter_deployment" {
   yaml_body = <<-YAML
     apiVersion: apps/v1

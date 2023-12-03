@@ -59,9 +59,9 @@ resource "kubectl_manifest" "karpenter_node_class" {
     apiVersion: karpenter.k8s.aws/v1beta1
     kind: EC2NodeClass
     metadata:
-      name: node-from-karpenter
+      name: default
     spec:
-      amiFamily: Ubuntu
+      amiFamily: AL2
       role: ${module.karpenter.role_name}
       subnetSelectorTerms:
         - tags:
@@ -83,28 +83,28 @@ resource "kubectl_manifest" "karpenter_node_pool" {
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
     metadata:
-      name: node-pool-from-karpenter
+      name: default
     spec:
       template:
         spec:
           nodeClassRef:
-            name: node-from-karpenter
+            name: default
           requirements:
-            - key: "karpenter.k8s.aws/instance-category"
+            - key: "node.kubernetes.io/instance-type"
               operator: In
-              values: ["c", "m", "r"]
-            - key: "karpenter.k8s.aws/instance-hypervisor"
+              values: ["t3a.medium", "t3a.large"]
+            - key: "topology.kubernetes.io/zone"
               operator: In
-              values: ["nitro"]
-            - key: karpenter.k8s.aws/instance-generation
-              operator: Gt
-              values: ["2"]
+              values: ["us-east-1a", "us-east-1c"]
             - key: "karpenter.sh/capacity-type" # Defaults to on-demand
               operator: In
               values: ["spot", "on-demand"]
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
+      limits:
+        cpu: "1000"
+        memory: 1000Gi
   YAML
 
   depends_on = [
@@ -118,7 +118,6 @@ resource "kubectl_manifest" "karpenter_deployment" {
     kind: Deployment
     metadata:
       name: inflate
-      namespace: karpenter
     spec:
       replicas: 0
       selector:

@@ -75,24 +75,29 @@ module "endpoints" {
 
   endpoints = {
     s3 = {
-      service = "s3"
-      tags    = merge(var.dev_tags, { Name = "s3-vpc-endpoint" })
+      service    = "s3"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "s3-vpc-endpoint" })
     },
     ec2 = {
-      service = "ec2"
-      tags    = merge(var.dev_tags, { Name = "ec2-vpc-endpoint" })
+      service    = "ec2"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "ec2-vpc-endpoint" })
     },
     sts = {
-      service = "sts"
-      tags    = merge(var.dev_tags, { Name = "sts-vpc-endpoint" })
+      service    = "sts"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "sts-vpc-endpoint" })
     },
     ssm = {
-      service = "ssm"
-      tags    = merge(var.dev_tags, { Name = "ssm-vpc-endpoint" })
+      service    = "ssm"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "ssm-vpc-endpoint" })
     },
     sqs = {
-      service = "sqs"
-      tags    = merge(var.dev_tags, { Name = "sqs-vpc-endpoint" })
+      service    = "sqs"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "sqs-vpc-endpoint" })
     },
   }
 

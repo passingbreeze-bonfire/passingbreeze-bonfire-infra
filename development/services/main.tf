@@ -64,7 +64,7 @@ module "eks" {
             cpu = "0.25"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
             # request/limit to ensure we can fit within that task
-            memory = "256G"
+            memory = "256M"
           }
         }
       })
@@ -100,14 +100,14 @@ module "eks" {
 
   ## Fargate
   fargate_profiles = {
-    karpenter = {
-      selectors = [
-        { namespace = "karpenter" }
-      ]
-    }
     kube-system = {
       selectors = [
         { namespace = "kube-system" }
+      ]
+    }
+    karpenter = {
+      selectors = [
+        { namespace = "karpenter" }
       ]
     }
   }

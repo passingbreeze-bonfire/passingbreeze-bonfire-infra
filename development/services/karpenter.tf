@@ -56,7 +56,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
     apiVersion: karpenter.k8s.aws/v1beta1
     kind: EC2NodeClass
     metadata:
-      name: node_from_karpenter
+      name: node-from-karpenter
     spec:
       amiFamily: Ubuntu
       role: ${module.karpenter.role_name}
@@ -80,12 +80,12 @@ resource "kubectl_manifest" "karpenter_node_pool" {
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
     metadata:
-      name: node_pool_from_karpenter
+      name: node-pool-from-karpenter
     spec:
       template:
         spec:
           nodeClassRef:
-            name: node_from_karpenter
+            name: node-from-karpenter
           requirements:
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
@@ -93,17 +93,18 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
               values: ["2", "4", "8"]
-            - key: "karpenter.k8s.aws/instance-hypervisor"
-              operator: In
-              values: ["nitro"]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
               values: ["3"]
+            - key: karpenter.k8s.aws/instance-size
+              operator: In
+              values: ["small", "large"]
             - key: "karpenter.sh/capacity-type" # Defaults to on-demand
               operator: In
-              values: ["spot"]
+              values: ["spot", "on-demand"]
       limits:
         cpu: 1000
+        memory: 1000Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s

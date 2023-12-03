@@ -186,7 +186,7 @@ resource "kubectl_manifest" "karpenter_default_deployment" {
       replicas: 0
       selector:
         matchLabels:
-          app: inflate
+          app: inflate-default
       template:
         metadata:
           labels:
@@ -218,7 +218,7 @@ resource "kubectl_manifest" "karpenter_service_deployment" {
       replicas: 0
       selector:
         matchLabels:
-          app: inflate
+          app: inflate-service
       template:
         metadata:
           labels:

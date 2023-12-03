@@ -168,7 +168,7 @@ resource "kubectl_manifest" "karpenter_service_node_pool" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_deployment" {
+resource "kubectl_manifest" "karpenter_default_deployment" {
   yaml_body = <<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -182,17 +182,49 @@ resource "kubectl_manifest" "karpenter_deployment" {
       template:
         metadata:
           labels:
-            app: inflate
+            app: inflate_default
         spec:
           terminationGracePeriodSeconds: 0
           containers:
-            - name: inflate
+            - name: inflate_default
               image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
               resources:
                 requests:
                   cpu: 1
           nodeSelector:
             type: default
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
+
+resource "kubectl_manifest" "karpenter_service_deployment" {
+  yaml_body = <<-YAML
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: inflate
+    spec:
+      replicas: 0
+      selector:
+        matchLabels:
+          app: inflate
+      template:
+        metadata:
+          labels:
+            app: inflate_service
+        spec:
+          terminationGracePeriodSeconds: 0
+          containers:
+            - name: inflate_default
+              image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
+              resources:
+                requests:
+                  cpu: 1
+          nodeSelector:
+            type: service
   YAML
 
   depends_on = [

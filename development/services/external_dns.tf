@@ -6,7 +6,7 @@ locals {
 }
 
 resource "aws_iam_role" "external_dns" {
-  name = "${module.eks.cluster_id}-external-dns"
+  name = "${module.eks.cluster_name}-external-dns-role"
 
   assume_role_policy = <<EOF
 {
@@ -30,8 +30,8 @@ EOF
 }
 
 resource "aws_iam_role_policy" "external_dns" {
-  name_prefix = "${module.eks.cluster_id}-external-dns"
-  role        = aws_iam_role.external_dns.name
+  name = "${module.eks.cluster_name}-external-dns-policy"
+  role = aws_iam_role.external_dns.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

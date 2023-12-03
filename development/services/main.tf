@@ -17,8 +17,8 @@ data "aws_ecrpublic_authorization_token" "token" {
 }
 
 locals {
-  name     = var.dev_eks_cluster_name
-  vpc_name = data.terraform_remote_state.dev_network.outputs.dev_vpc_name
+  cluster_name = var.dev_eks_cluster_name
+  vpc_name     = data.terraform_remote_state.dev_network.outputs.dev_vpc_name
   tags = merge(var.dev_tags, {
     "Name" = local.vpc_name
   })
@@ -32,7 +32,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
-  cluster_name    = local.name
+  cluster_name    = local.cluster_name
   cluster_version = "1.28"
 
   vpc_id     = data.terraform_remote_state.dev_network.outputs.dev_vpc_id
@@ -46,15 +46,26 @@ module "eks" {
     coredns = {
       addon_version = "v1.10.1-eksbuild.6"
       configuration_values = jsonencode({
-        nodeSelector : {
-          type : "core"
+        computeType = "Fargate"
+        resources = {
+          limits = {
+            cpu    = "1"
+            memory = "4G"
+          }
+          requests = {
+            cpu    = "0.25"
+            memory = "256M"
+          }
         }
-        tolerations : [
+        nodeSelector = {
+          type = "core"
+        }
+        tolerations = [
           {
-            key : "type",
-            value : "core",
-            operator : "Equal",
-            effect : "NoSchedule"
+            key      = "type",
+            value    = "core",
+            operator = "Equal",
+            effect   = "NoSchedule"
           }
         ]
       })
@@ -90,6 +101,11 @@ module "eks" {
 
   ## Fargate
   fargate_profiles = {
+    kube-system = {
+      selectors = [
+        { namespace = "kube-system" }
+      ]
+    }
     karpenter = {
       selectors = [
         { namespace = "karpenter" }
@@ -99,7 +115,7 @@ module "eks" {
 
   ## Node Security Group
   node_security_group_tags = {
-    "karpenter.sh/discovery" = format("%s-eks", local.vpc_name) # for Karpenter
+    "karpenter.sh/discovery" = format("%s-eks", local.cluster_name) # for Karpenter
   }
 
   node_security_group_additional_rules = {

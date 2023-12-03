@@ -61,7 +61,7 @@ resource "aws_iam_role_policy" "external_dns" {
 resource "kubernetes_service_account" "external_dns" {
   metadata {
     name      = "external-dns"
-    namespace = "external-dns"
+    namespace = "kube-system"
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns.arn
     }
@@ -107,11 +107,10 @@ resource "kubernetes_cluster_role_binding" "external_dns" {
   }
 }
 
-resource "helm_release" "external_dns" {
-  namespace        = "external-dns"
-  create_namespace = true
-
+resource "helm_release" "external-dns" {
   name       = "external-dns"
+  namespace  = kubernetes_service_account.external_dns.metadata.0.namespace
+  wait       = true
   repository = "https://kubernetes-sigs.github.io/external-dns/"
   chart      = "external-dns"
   version    = "v1.13.1"

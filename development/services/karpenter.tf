@@ -92,19 +92,13 @@ resource "kubectl_manifest" "karpenter_node_pool" {
           requirements:
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: ["t", "r"]
-            - key: karpenter.k8s.aws/instance-size
-              operator: In
-              values: ["medium", "large"]
+              values: [c, m, r]
+            - key: karpenter.k8s.aws/instance-generation
+              operator: Gt
+              values: ["2"]
             - key: "karpenter.sh/capacity-type" # Defaults to on-demand
               operator: In
               values: ["spot", "on-demand"]
-      requests:
-        cpu: 1
-        memory: 1Gi
-      limits:
-        cpu: 1
-        memory: 1Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s

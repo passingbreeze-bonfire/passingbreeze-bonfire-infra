@@ -37,8 +37,9 @@ data "terraform_remote_state" "network" {
 # Security Group #
 ##################
 module "security_group" {
-  source   = "./security_groups"
-  vpc_id   = data.terraform_remote_state.network.outputs.dev_vpc_id
-  vpc_cidr = data.terraform_remote_state.network.outputs.vpc_cidr_block
-  tags     = var.dev_tags
+  source       = "./security_groups"
+  vpc_id       = data.terraform_remote_state.network.outputs.dev_vpc_id
+  vpc_cidr     = data.terraform_remote_state.network.outputs.vpc_cidr_block
+  cluster_name = var.dev_eks_cluster_name
+  tags         = var.dev_tags
 }

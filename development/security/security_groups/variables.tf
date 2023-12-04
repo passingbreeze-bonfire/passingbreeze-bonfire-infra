@@ -12,6 +12,6 @@ variable "tags" {
   type = map(string)
 }
 
-variable "dev_eks_cluster_name" {
+variable "cluster_name" {
   type = string
 }

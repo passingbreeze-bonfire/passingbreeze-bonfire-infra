@@ -48,13 +48,26 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      addon_version = "v1.10.1-eksbuild.6"
+      most_recent = true
+      configuration_values = jsonencode({
+        nodeSelector : {
+          type : "core"
+        }
+        tolerations : [
+          {
+            key : "type",
+            value : "core",
+            operator : "Equal",
+            effect : "NoSchedule"
+          }
+        ]
+      })
     }
     kube-proxy = {
-      addon_version = "v1.28.2-eksbuild.2"
+      most_recent = true
     }
     vpc-cni = {
-      addon_version            = "v1.15.4-eksbuild.1"
+      most_recent              = true
       before_compute           = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
       configuration_values = jsonencode({
@@ -69,14 +82,6 @@ module "eks" {
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
-    ingress_https_with_self = {
-      description                = "EKS Cluster allows 443 port to get API call"
-      type                       = "ingress"
-      from_port                  = 443
-      to_port                    = 443
-      protocol                   = "TCP"
-      source_node_security_group = true
-    },
     ingress_http_with_self = {
       description                = "EKS Cluster allows 80 port to get API call"
       type                       = "ingress"
@@ -102,11 +107,11 @@ module "eks" {
       cidr_blocks = [data.terraform_remote_state.network.outputs.vpc_cidr_block]
     },
     egress = {
-      description = "outbound"
-      protocol    = "-1"
+      description = "EKS Cluster allows all egress"
+      type        = "egress"
       from_port   = 0
       to_port     = 0
-      type        = "egress"
+      protocol    = "-1"
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
@@ -133,14 +138,6 @@ module "eks" {
       to_port     = 0
       type        = "ingress"
       self        = true
-    },
-    egress = {
-      description = "outbound"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 

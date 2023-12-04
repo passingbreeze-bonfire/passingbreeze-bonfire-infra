@@ -23,6 +23,7 @@ module "karpenter" {
 
   tags = local.tags
 }
+
 resource "helm_release" "karpenter" {
   namespace        = "karpenter"
   create_namespace = true
@@ -112,7 +113,7 @@ resource "kubectl_manifest" "node_pools" {
               values: ["on-demand"]
             - key: "node.kubernetes.io/instance-type"
               operator: In
-              values: ["c7a.large", "m7a.large", "r7a.large"]
+              values: ["c6a.large", "m6a.large", "r6a.large"]
           nodeClassRef:
             name: default
       limits:

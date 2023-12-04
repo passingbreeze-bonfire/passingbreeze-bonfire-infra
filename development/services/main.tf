@@ -127,7 +127,7 @@ module "eks" {
 
   ## Node Security Group
   node_security_group_tags = {
-    "karpenter.sh/discovery" = format("%s-eks", local.cluster_name) # for Karpenter
+    "karpenter.sh/discovery" = local.cluster_name # for Karpenter
   }
 
   node_security_group_additional_rules = {

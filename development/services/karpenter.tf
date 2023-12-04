@@ -27,6 +27,10 @@ resource "helm_release" "karpenter" {
   version    = "v0.32.3"
 
   set {
+    name  = "settings.isolatedVPC"
+    value = true
+  }
+  set {
     name  = "settings.aws.clusterName"
     value = module.eks.cluster_name
   }
@@ -68,7 +72,7 @@ resource "kubectl_manifest" "karpenter_node_class_default" {
       blockDeviceMappings:
         - deviceName: /dev/xvda
           ebs:
-            volumeSize: 20Gi
+            volumeSize: 50Gi
             volumeType: gp3
             iops: 3000
             deleteOnTermination: true
@@ -80,25 +84,28 @@ resource "kubectl_manifest" "karpenter_node_class_default" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_pool_karpenter" {
+resource "kubectl_manifest" "core_node_pool" {
   yaml_body = <<-YAML
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
     metadata:
-      name: default
+      name: core
     spec:
       template:
         metadata:
           labels:
-            type: karpenter
+            type: core
         spec:
           requirements:
+            - key: kubernetes.io/os
+              operator: In
+              values: ["linux"]
             - key: karpenter.sh/capacity-type
               operator: In
               values: ["on-demand"]
             - key: "node.kubernetes.io/instance-type"
               operator: In
-              values: ["c5.large", "m5.large", "r5.large", "m5.xlarge"]
+              values: ["c7a.large", "m7a.large", "r7a.large"]
           nodeClassRef:
             name: default
       limits:
@@ -114,6 +121,7 @@ resource "kubectl_manifest" "karpenter_node_pool_karpenter" {
   ]
 }
 
+# test deployment
 resource "kubectl_manifest" "karpenter_deployment_default" {
   yaml_body = <<-YAML
     apiVersion: apps/v1

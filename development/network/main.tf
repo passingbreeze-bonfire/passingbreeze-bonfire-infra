@@ -68,39 +68,39 @@ module "dev_vpc" {
   tags = var.dev_tags
 }
 
-#module "endpoints" {
-#  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-#
-#  vpc_id             = module.dev_vpc.vpc_id
-#  security_group_ids = [data.terraform_remote_state.security.outputs.aws_service_endpoint_sg_id]
-#
-#  endpoints = {
-#    s3 = {
-#      service    = "s3"
-#      subnet_ids = module.dev_vpc.private_subnets
-#      tags       = merge(var.dev_tags, { Name = "s3-vpc-endpoint" })
-#    },
-#    ec2 = {
-#      service    = "ec2"
-#      subnet_ids = module.dev_vpc.private_subnets
-#      tags       = merge(var.dev_tags, { Name = "ec2-vpc-endpoint" })
-#    },
-#    sts = {
-#      service    = "sts"
-#      subnet_ids = module.dev_vpc.private_subnets
-#      tags       = merge(var.dev_tags, { Name = "sts-vpc-endpoint" })
-#    },
-#    ssm = {
-#      service    = "ssm"
-#      subnet_ids = module.dev_vpc.private_subnets
-#      tags       = merge(var.dev_tags, { Name = "ssm-vpc-endpoint" })
-#    },
-#    sqs = {
-#      service    = "sqs"
-#      subnet_ids = module.dev_vpc.private_subnets
-#      tags       = merge(var.dev_tags, { Name = "sqs-vpc-endpoint" })
-#    },
-#  }
-#
-#  tags = var.dev_tags
-#}
+module "endpoints" {
+  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+
+  vpc_id             = module.dev_vpc.vpc_id
+  security_group_ids = [data.terraform_remote_state.security.outputs.aws_service_endpoint_sg_id]
+
+  endpoints = {
+    s3 = {
+      service    = "s3"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "s3-vpc-endpoint" })
+    },
+    ec2 = {
+      service    = "ec2"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "ec2-vpc-endpoint" })
+    },
+    sts = {
+      service    = "sts"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "sts-vpc-endpoint" })
+    },
+    ssm = {
+      service    = "ssm"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "ssm-vpc-endpoint" })
+    },
+    sqs = {
+      service    = "sqs"
+      subnet_ids = module.dev_vpc.private_subnets
+      tags       = merge(var.dev_tags, { Name = "sqs-vpc-endpoint" })
+    },
+  }
+
+  tags = var.dev_tags
+}

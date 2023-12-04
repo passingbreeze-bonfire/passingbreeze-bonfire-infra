@@ -42,22 +42,15 @@ module "eks" {
   manage_aws_auth_configmap              = true
   cloudwatch_log_group_retention_in_days = 1
 
+  cluster_addons_timeouts = {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+
   cluster_addons = {
     coredns = {
       addon_version = "v1.10.1-eksbuild.6"
-      configuration_values = jsonencode({
-        computeType = "Fargate"
-        resources = {
-          limits = {
-            cpu    = "1"
-            memory = "4G"
-          }
-          requests = {
-            cpu    = "0.25"
-            memory = "256M"
-          }
-        }
-      })
     }
     kube-proxy = {
       addon_version = "v1.28.2-eksbuild.2"
@@ -90,11 +83,6 @@ module "eks" {
 
   ## Fargate
   fargate_profiles = {
-    kube-system = {
-      selectors = [
-        { namespace = "kube-system" }
-      ]
-    }
     karpenter = {
       selectors = [
         { namespace = "karpenter" }

@@ -68,6 +68,7 @@ module "dev_vpc" {
   tags = var.dev_tags
 }
 
+/*
 module "endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
 
@@ -104,3 +105,4 @@ module "endpoints" {
 
   tags = var.dev_tags
 }
+*/

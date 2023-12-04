@@ -1,5 +1,11 @@
 ## EKS / Karpenter
 
+locals {
+  node_pools = [
+    "core", "service"
+  ]
+}
+
 module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
@@ -84,17 +90,18 @@ resource "kubectl_manifest" "karpenter_node_class_default" {
   ]
 }
 
-resource "kubectl_manifest" "core_node_pool" {
+resource "kubectl_manifest" "node_pools" {
+  for_each  = toset(local.node_pools)
   yaml_body = <<-YAML
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
     metadata:
-      name: core
+      name: ${each.key}
     spec:
       template:
         metadata:
           labels:
-            type: core
+            type: ${each.key}
         spec:
           requirements:
             - key: kubernetes.io/os

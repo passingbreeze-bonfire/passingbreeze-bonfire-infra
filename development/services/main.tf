@@ -39,6 +39,7 @@ module "eks" {
   subnet_ids = data.terraform_remote_state.dev_network.outputs.dev_vpc_private_subnets
 
   cluster_endpoint_public_access         = true
+  cluster_endpoint_private_access        = true
   manage_aws_auth_configmap              = true
   cloudwatch_log_group_retention_in_days = 1
 
@@ -51,15 +52,28 @@ module "eks" {
   cluster_addons = {
     coredns = {
       addon_version = "v1.10.1-eksbuild.6"
+      configuration_values = jsonencode({
+        nodeSelector = {
+          type = "core"
+        }
+      })
     }
     kube-proxy = {
       addon_version = "v1.28.2-eksbuild.2"
+      configuration_values = jsonencode({
+        nodeSelector = {
+          type = "core"
+        }
+      })
     }
     vpc-cni = {
       addon_version            = "v1.15.4-eksbuild.1"
       before_compute           = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
       configuration_values = jsonencode({
+        nodeSelector = {
+          type = "core"
+        }
         env = {
           # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
           ENABLE_PREFIX_DELEGATION = "true"

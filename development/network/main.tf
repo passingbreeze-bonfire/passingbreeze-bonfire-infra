@@ -33,9 +33,10 @@ data "terraform_remote_state" "security" {
 }
 
 locals {
-  name      = "passingbreeze-bonfire-dev-network"
-  ipv4_cidr = "10.0.0.0/16"
-  azs       = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
+  name             = var.dev_vpc_name
+  eks_cluster_name = var.dev_eks_cluster_name
+  ipv4_cidr        = "10.0.0.0/16"
+  azs              = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
 
 module "dev_vpc" {
@@ -47,7 +48,7 @@ module "dev_vpc" {
   enable_flow_log         = false
   map_public_ip_on_launch = true
 
-  name            = var.dev_vpc_name
+  name            = local.name
   cidr            = local.ipv4_cidr
   azs             = local.azs
   private_subnets = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 4, k)]
@@ -60,8 +61,8 @@ module "dev_vpc" {
   }
 
   private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1                            # for AWS Load Balancer Controller
-    "karpenter.sh/discovery"          = format("%s-eks", local.name) # for Karpenter
+    "kubernetes.io/role/internal-elb" = 1                      # for AWS Load Balancer Controller
+    "karpenter.sh/discovery"          = local.eks_cluster_name # for Karpenter
   }
 
   tags = var.dev_tags

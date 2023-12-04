@@ -10,6 +10,10 @@ data "terraform_remote_state" "services" {
   }
 }
 
+locals {
+  eks_cluster_name = var.dev_eks_cluster_name
+}
+
 # aws_service_endpoint_sg
 
 module "aws_service_endpoint_sg" {
@@ -31,7 +35,9 @@ module "aws_service_endpoint_sg" {
   ]
 
   egress_rules = ["all-all"]
-  tags         = var.tags
+  tags = merge(var.tags, {
+    "karpenter.sh/discovery" = local.eks_cluster_name
+  })
 }
 
 resource "aws_security_group_rule" "cluster_sg_rule" {

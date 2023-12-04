@@ -11,6 +11,8 @@ module "karpenter" {
 
   cluster_name                               = module.eks.cluster_name
   irsa_oidc_provider_arn                     = module.eks.oidc_provider_arn
+  irsa_namespace_service_accounts            = ["karpenter:karpenter"]
+  irsa_use_name_prefix                       = false
   enable_karpenter_instance_profile_creation = true
 
   iam_role_additional_policies = {
@@ -147,7 +149,7 @@ resource "kubectl_manifest" "karpenter_deployment_default" {
             app: inflate
         spec:
           nodeSelector:
-            type: karpenter
+            type: core
           terminationGracePeriodSeconds: 0
           containers:
             - name: inflate

@@ -31,6 +31,9 @@ module "eks" {
 
   cluster_name    = local.cluster_name
   cluster_version = "1.28"
+  cluster_tags = {
+    "karpenter.sh/discovery" = local.cluster_name # for Karpenter
+  }
 
   vpc_id     = data.terraform_remote_state.network.outputs.dev_vpc_id
   subnet_ids = data.terraform_remote_state.network.outputs.dev_vpc_private_subnets

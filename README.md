@@ -1,4 +1,4 @@
-# Repo for Infra Codes for the managing Infras and Services of Passingbreeze
+# Infra Codes Repo for the managing Infras and Services of Passingbreeze
 
 ## Description
 Managing Infrastructure and Services for Microservices from Passingbreeze
@@ -8,11 +8,10 @@ Managing Infrastructure and Services for Microservices from Passingbreeze
 
 ## Support & QnA
 - jeongmin1237@gmail.com
+- [GitHub Issues](https://github.com/passingbreeze-bonfire/passingbreeze-bonfire-infra/issues)
 
 ## Roadmap
 * Ready to make infras for weather slack bot
-* ~~Set AWS VPC for development and production environments~~
-* ~~Set Hashicorp Virtual Network for development and production environments~~
 
 ## License
 MIT License

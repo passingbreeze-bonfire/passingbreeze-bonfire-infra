@@ -5,28 +5,7 @@
 #  aws_account_id = data.aws_caller_identity.current.account_id
 #}
 #
-#resource "aws_iam_role" "external_dns" {
-#  name = "${module.eks.cluster_name}-external-dns-role"
-#
-#  assume_role_policy = <<EOF
-#{
-#  "Version": "2012-10-17",
-#  "Statement": [
-#    {
-#      "Effect": "Allow",
-#      "Principal": {
-#        "Federated": "arn:aws:iam::${local.aws_account_id}:oidc-provider/${local.oidc_url}"
-#      },
-#      "Action": "sts:AssumeRoleWithWebIdentity",
-#      "Condition": {
-#        "StringEquals": {
-#          "${local.oidc_url}:sub": "system:serviceaccount:kube-system:external-dns"
-#        }
-#      }
-#    }
-#  ]
-#}
-#EOF
+
 #}
 #
 #resource "aws_iam_role_policy" "external_dns" {

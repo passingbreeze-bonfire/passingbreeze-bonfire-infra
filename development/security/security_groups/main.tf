@@ -1,46 +1,32 @@
-
-data "terraform_remote_state" "services" {
-  backend = "remote"
-
-  config = {
+terraform {
+  cloud {
     organization = "passingbreeze"
-    workspaces = {
-      name = "passingbreeze-bonfire-dev-services"
+
+    workspaces {
+      name = "passingbreeze-bonfire-dev-security-groups"
+    }
+  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.0"
     }
   }
 }
 
+provider "aws" {
+  region = "us-east-1"
+}
+
+data "aws_caller_identity" "current" {}
+
+locals {
+  name       = "passingbreeze-bonfire"
+  env        = "dev"
+  account_id = data.aws_caller_identity.current.account_id
+  tags       = var.dev_tags
+}
+
+
 # aws_service_endpoint_sg
 
-module "aws_service_endpoint_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
-
-  name        = "service-endpoint-sg"
-  description = "Security group for service endpoint"
-  vpc_id      = var.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      description = "Allow all inbound traffic from VPC"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = var.vpc_cidr
-    }
-  ]
-
-  egress_rules = ["all-all"]
-  tags = merge(var.tags, {
-    "karpenter.sh/discovery" = var.cluster_name
-  })
-}
-
-resource "aws_security_group_rule" "cluster_sg_rule" {
-  from_port                = 0
-  protocol                 = "-1"
-  source_security_group_id = data.terraform_remote_state.services.outputs.cluster_security_group_id
-  security_group_id        = module.aws_service_endpoint_sg.security_group_id
-  to_port                  = 0
-  type                     = "ingress"
-}

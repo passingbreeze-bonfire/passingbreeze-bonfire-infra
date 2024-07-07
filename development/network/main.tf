@@ -35,6 +35,7 @@ data "terraform_remote_state" "security" {
 locals {
   name             = var.dev_vpc_name
   eks_cluster_name = var.dev_eks_cluster_name
+  tags             = var.dev_tags
   ipv4_cidr        = "10.0.0.0/16"
   azs              = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
@@ -65,7 +66,7 @@ module "dev_vpc" {
     "karpenter.sh/discovery"          = local.eks_cluster_name # for Karpenter
   }
 
-  tags = var.dev_tags
+  tags = local.tags
 }
 
 /*

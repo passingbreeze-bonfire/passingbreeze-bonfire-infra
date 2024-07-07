@@ -16,21 +16,10 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
 }
 
 data "aws_region" "current" {}
-
-data "terraform_remote_state" "security" {
-  backend = "remote"
-
-  config = {
-    organization = "passingbreeze"
-    workspaces = {
-      name = "passingbreeze-bonfire-dev-security"
-    }
-  }
-}
 
 locals {
   name             = var.dev_vpc_name
@@ -42,7 +31,6 @@ locals {
 
 module "dev_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = ">= 5.0.0"
 
   enable_dns_hostnames    = true
   enable_dns_support      = true

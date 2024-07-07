@@ -1,10 +1,15 @@
 # CHANGELOG
 
+## 2023-07-07
+* pulumi로 전환
+  - Python으로 작성
+
 ## 2023-01-01
 * iam-role 모듈 완성
 * security group 작성 툴 생성
 * 퍼블릭 서브넷 하나 삭제
 * weather bot, cost bot 올릴 준비
+
 ## 2022-12-26
 * ~~security group~~, iam-role 모듈 완성
 * ~~packer 사용 예정~~

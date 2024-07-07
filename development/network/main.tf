@@ -16,32 +16,21 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
 }
 
 data "aws_region" "current" {}
 
-data "terraform_remote_state" "security" {
-  backend = "remote"
-
-  config = {
-    organization = "passingbreeze"
-    workspaces = {
-      name = "passingbreeze-bonfire-dev-security"
-    }
-  }
-}
-
 locals {
   name             = var.dev_vpc_name
   eks_cluster_name = var.dev_eks_cluster_name
+  tags             = var.dev_tags
   ipv4_cidr        = "10.0.0.0/16"
   azs              = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
 
 module "dev_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = ">= 5.0.0"
 
   enable_dns_hostnames    = true
   enable_dns_support      = true
@@ -65,7 +54,7 @@ module "dev_vpc" {
     "karpenter.sh/discovery"          = local.eks_cluster_name # for Karpenter
   }
 
-  tags = var.dev_tags
+  tags = local.tags
 }
 
 /*

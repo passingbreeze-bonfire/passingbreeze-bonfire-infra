@@ -8,10 +8,10 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "tags" {
+variable "dev_tags" {
   type = map(string)
 }
 
-variable "cluster_name" {
+variable "dev_eks_cluster_name" {
   type = string
 }

@@ -4,7 +4,7 @@
 - Managing Infrastructure for Microservices from Passingbreeze's codes
 
 ## Infra Image
-- [Infra Image](https://github.com/passingbreeze-bonfire/passingbreeze-bonfire-infra/assets/passingbreeze_infra.png)
+![InfraImage](https://github.com/passingbreeze-bonfire/passingbreeze-bonfire-infra/tree/main/assets/passingbreeze_infra.png)
 
 ## Usage
 * Still looking for its usage... lol

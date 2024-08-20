@@ -17,3 +17,15 @@ output "dev_vpc_public_subnets" {
 output "dev_vpc_private_subnets" {
   value = module.dev_vpc.private_subnets
 }
+
+output "dev_vpc_database_subnets" {
+  value = module.dev_vpc.database_subnets
+}
+
+output "dev_vpc_database_subnet_group_name" {
+  value = module.dev_vpc.database_subnet_group_name
+}
+
+output "dev_vpc_elasticache_subnet_group_name" {
+  value = module.dev_vpc.elasticache_subnet_group_name
+}

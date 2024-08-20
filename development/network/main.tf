@@ -10,7 +10,6 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.0"
     }
   }
 }
@@ -25,25 +24,38 @@ locals {
   name             = var.dev_vpc_name
   eks_cluster_name = var.dev_eks_cluster_name
   tags             = var.dev_tags
-  ipv4_cidr        = "10.0.0.0/16"
+  env              = "dev"
+  vpc_cidr         = "10.0.0.0/16"
   azs              = tolist([for az in ["a", "c"] : "${data.aws_region.current.name}${az}"])
 }
 
 module "dev_vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
+  source = "terraform-aws-modules/vpc/aws"
 
   enable_dns_hostnames    = true
   enable_dns_support      = true
-  enable_flow_log         = false
   map_public_ip_on_launch = true
+  enable_nat_gateway      = true
 
-  name            = local.name
-  cidr            = local.ipv4_cidr
-  azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 4, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.ipv4_cidr, 4, k + 4)]
+  name                = local.name
+  cidr                = local.vpc_cidr
+  azs                 = local.azs
+  private_subnets     = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
+  public_subnets      = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 4)]
+  database_subnets    = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 8)]
 
-  enable_nat_gateway = true
+  private_subnet_names = ["private-dmz", "private-server"]
+  public_subnet_names  = ["public-dmz", "public-server"]
+
+  create_database_subnet_group    = true
+  create_elasticache_subnet_group = true
+
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
+  enable_flow_log                      = false
+  vpc_flow_log_tags = merge(local.tags, {
+    "Name" = format("%s-flow-log", local.name)
+  })
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1 # for AWS Load Balancer Controller
@@ -54,7 +66,9 @@ module "dev_vpc" {
     "karpenter.sh/discovery"          = local.eks_cluster_name # for Karpenter
   }
 
-  tags = local.tags
+  tags = merge(local.tags, {
+    Name = local.name
+  })
 }
 
 /*

@@ -1,7 +1,10 @@
 # Infra Codes Repo for the managing Infras and Services of Passingbreeze
 
 ## Description
-Managing Infrastructure and Services for Microservices from Passingbreeze
+- Managing Infrastructure for Microservices from Passingbreeze's codes
+
+## Infra Image
+- [Infra Image](https://github.com/passingbreeze-bonfire/passingbreeze-bonfire-infra/assets/passingbreeze_infra.png)
 
 ## Usage
 * Still looking for its usage... lol
